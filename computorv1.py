@@ -1,20 +1,3 @@
-#!/usr/bin/env python3
-"""
-Computor v1 - Polynomial Equation Solver
-42 School Project - Cryptography and Math Specialization
-
-This program solves polynomial equations of degree 2 or lower.
-It displays the reduced form, polynomial degree, and solution(s).
-
-Usage:
-    ./computorv1 "equation"
-    ./computorv1  (reads from STDIN)
-
-Examples:
-    ./computorv1 "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"
-    echo "X^2 + 5X + 3 = 0" | ./computorv1
-"""
-
 import sys
 import re
 from typing import Union, NoReturn, Dict, Tuple
