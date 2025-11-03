@@ -10,14 +10,6 @@ def handle_error(message: str) -> NoReturn:
     
     Returns:
         NoReturn: This function never returns (exits program)
-    
-    Exit code: 1 (error)
-    
-    Handles all types of errors:
-    - Parsing errors
-    - Validation errors
-    - Mathematical errors (division by zero, etc.)
-    - Input format errors
     """
     print(f"Error: {message}", file=sys.stderr)
     sys.exit(1)
@@ -31,14 +23,6 @@ def format_number(n: Union[int, float, None]) -> str:
     
     Returns:
         str: Formatted number string
-    
-    Handles:
-    - Removes trailing .0 for whole numbers (5.0 → "5")
-    - Rounds very small floats to 0 (1e-10 → "0")
-    - Handles negative zero (-0.0 → "0")
-    - Rounds to 6 decimal places for readability
-    - Handles special values (inf, nan)
-    - Preserves integer representation when possible
     """
     # Handle None
     if n is None:
@@ -87,16 +71,6 @@ def gcd(a: Union[int, float], b: Union[int, float]) -> int:
     
     Returns:
         int: GCD of a and b (always positive)
-    
-    Handles:
-    - Negative numbers (converts to absolute values)
-    - Zero values (gcd(0, n) = n, gcd(n, 0) = n)
-    - Equal numbers
-    - a < b or a > b (algorithm works both ways)
-    
-    Algorithm: Euclidean algorithm
-    - gcd(a, b) = gcd(b, a mod b)
-    - Base case: gcd(a, 0) = a
     """
     # Convert to absolute values (GCD is always positive)
     a = abs(int(a))
@@ -122,21 +96,6 @@ def simplify_fraction(numerator: Union[int, float], denominator: Union[int, floa
     
     Returns:
         str: Formatted fraction string or decimal if not simplifiable
-    
-    Handles:
-    - Zero denominator (error)
-    - Zero numerator (returns "0")
-    - Negative fractions (sign in numerator)
-    - Whole numbers (returns just the number)
-    - Already irreducible fractions
-    - Very small denominators/numerators
-    - Floating point to integer conversion
-    
-    Output formats:
-    - "0" if numerator is 0
-    - "5" if result is whole number
-    - "3/4" for positive fractions
-    - "-3/4" for negative fractions (sign on numerator)
     """
     # Handle zero denominator
     if denominator == 0:
@@ -194,16 +153,6 @@ def validate_equation(equation_str: str) -> bool:
     
     Returns:
         bool: True if valid, raises error otherwise
-    
-    Validates:
-    - Exactly one '=' sign present
-    - Only allowed characters: digits, X, ^, *, +, -, =, spaces, dots
-    - Not empty or whitespace only
-    - Both sides of equation are not empty
-    - No invalid character sequences
-    
-    Raises:
-        Calls handle_error() if validation fails
     """
     # Check for empty or whitespace-only string
     if not equation_str or equation_str.strip() == "":
