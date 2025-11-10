@@ -1,8 +1,8 @@
 import sys
 import re
-from typing import Union, NoReturn, Dict, Tuple
+from typing import Union, Dict, Tuple
 
-def handle_error(message: str) -> NoReturn:
+def handle_error(message: str) -> None:
     """Prints an error message to stderr and exits the program."""
     print(f"Error: {message}", file=sys.stderr)
     sys.exit(1)
