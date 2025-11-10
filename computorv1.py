@@ -1,8 +1,8 @@
 import sys
 import re
-from typing import Union, Dict, Tuple
+from typing import Union, NoReturn, Dict, Tuple
 
-def handle_error(message: str) -> None:
+def handle_error(message: str) -> NoReturn:
     """Prints an error message to stderr and exits the program."""
     print(f"Error: {message}", file=sys.stderr)
     sys.exit(1)
@@ -377,7 +377,7 @@ def print_steps(reduced: Dict[int, float], degree: int) -> None:
         
         print(f"This is a quadratic equation: {format_number(a)}X² + {format_number(b)}X + {format_number(c)} = 0")
         print(f"Coefficients: a = {format_number(a)}, b = {format_number(b)}, c = {format_number(c)}")
-        print(f"\nUsing quadratic formula: x = (-b ± √Δ) / (2a)")
+        print(f"\nUsing quadratic formula: x = (-b ± √Δ) / 2a")
         print(f"Where Δ = b² - 4ac (discriminant)")
         
         discriminant = b * b - 4 * a * c
@@ -388,38 +388,11 @@ def print_steps(reduced: Dict[int, float], degree: int) -> None:
         print(f"  Δ = {format_number(discriminant)}")
         
         if discriminant > 0:
-            print(f"\nΔ > 0: Two distinct real solutions exist.")
-            sqrt_discriminant = manual_sqrt(discriminant)
-            print(f"√Δ = {format_number(sqrt_discriminant)}")
-            print(f"\nNow calculating both solutions using x = (-b ± √Δ) / (2a):")
-            print(f"  x₁ = (-({format_number(b)}) + {format_number(sqrt_discriminant)}) / (2 * {format_number(a)})")
-            print(f"  x₂ = (-({format_number(b)}) - {format_number(sqrt_discriminant)}) / (2 * {format_number(a)})")
-            
-            x1 = (-b + sqrt_discriminant) / (2 * a)
-            x2 = (-b - sqrt_discriminant) / (2 * a)
-            print(f"  x₁ = {format_number(x1)}")
-            print(f"  x₂ = {format_number(x2)}")
-        
+            print(f"\nΔ > 0: Two distinct real solutions exist")
         elif abs(discriminant) < 1e-10:
-            print(f"\nΔ = 0: One repeated real solution exists.")
-            print(f"x = -b / (2a)")
-            print(f"  = -({format_number(b)}) / (2 * {format_number(a)})")
-            x = -b / (2 * a)
-            print(f"  = {format_number(x)}")
-        
+            print(f"\nΔ = 0: One repeated real solution exists")
         else:
-            print(f"\nΔ < 0: Two complex conjugate solutions exist.")
-            abs_discriminant = -discriminant
-            sqrt_abs_discriminant = manual_sqrt(abs_discriminant)
-            print(f"√|Δ| = {format_number(sqrt_abs_discriminant)}")
-            print(f"\nNow calculating using x = (-b ± i√|Δ|) / (2a):")
-            print(f"  x₁ = (-({format_number(b)}) + i{format_number(sqrt_abs_discriminant)}) / (2 * {format_number(a)})")
-            print(f"  x₂ = (-({format_number(b)}) - i{format_number(sqrt_abs_discriminant)}) / (2 * {format_number(a)})")
-            
-            real_part = -b / (2 * a)
-            imag_part = sqrt_abs_discriminant / (2 * a)
-            print(f"  x₁ = {format_number(real_part)} + {format_number(imag_part)}i")
-            print(f"  x₂ = {format_number(real_part)} - {format_number(imag_part)}i")
+            print(f"\nΔ < 0: Two complex conjugate solutions exist")
     
     else:
         print(f"This is a degree {degree} polynomial equation.")
@@ -680,7 +653,6 @@ def solve_degree_3(reduced: Dict[int, float]) -> None:
         sqrt_term = manual_sqrt(-p / 3.0)
         
         # Calculate angle: φ = arccos((3q)/(2p) * sqrt(-3/p))
-        # We need arccos, but we'll use an approximation
         cos_arg = (3 * q) / (2 * p) * manual_sqrt(-3 / p)
         
         # Clamp to [-1, 1] for numerical stability
@@ -689,16 +661,17 @@ def solve_degree_3(reduced: Dict[int, float]) -> None:
         elif cos_arg < -1:
             cos_arg = -1
         
-        # Manual arccos using Taylor series (approximate)
-        # For better results, we can use: arccos(x) ≈ π/2 - arcsin(x)
-        # For simplicity, use iterative method
+        # Manual arccos implementation
         phi = manual_arccos(cos_arg)
         
-        # Calculate three roots
-        import math
-        t1 = 2 * sqrt_term * math.cos(phi / 3.0)
-        t2 = 2 * sqrt_term * math.cos((phi + 2 * math.pi) / 3.0)
-        t3 = 2 * sqrt_term * math.cos((phi + 4 * math.pi) / 3.0)
+        # Manual π value
+        PI = 3.141592653589793
+        
+        # Calculate three roots using manual cosine
+        # cos(θ) using Taylor series: cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + ...
+        t1 = 2 * sqrt_term * manual_cos(phi / 3.0)
+        t2 = 2 * sqrt_term * manual_cos((phi + 2 * PI) / 3.0)
+        t3 = 2 * sqrt_term * manual_cos((phi + 4 * PI) / 3.0)
         
         # Convert back: x = t - B/3
         shift = B / 3.0
@@ -748,7 +721,7 @@ def solve_degree_3(reduced: Dict[int, float]) -> None:
 
 def manual_arccos(x: float) -> float:
     """
-    Approximates arccos(x) using Newton's method.
+    Computes arccos(x) manually using Taylor series and Newton-Raphson method.
     
     Args:
         x (float): Value between -1 and 1
@@ -757,18 +730,88 @@ def manual_arccos(x: float) -> float:
         float: arccos(x) in radians
     
     Uses the identity: arccos(x) = π/2 - arcsin(x)
-    And arcsin is approximated using series or numerical methods.
+    Where arcsin(x) is computed using Taylor series.
+    
+    Taylor series for arcsin(x):
+    arcsin(x) = x + (1/2)(x³/3) + (1·3)/(2·4)(x⁵/5) + (1·3·5)/(2·4·6)(x⁷/7) + ...
     """
-    # Clamp input
+    # Clamp input to valid range
     if x > 1:
         x = 1
     if x < -1:
         x = -1
     
-    # For simplicity, use built-in math for bonus feature
-    # In a strict implementation, this would need a series expansion
-    import math
-    return math.acos(x)
+    # Manual π value (sufficient precision)
+    PI = 3.141592653589793
+    
+    # Special cases for better accuracy
+    if abs(x - 1) < 1e-10:
+        return 0.0  # arccos(1) = 0
+    if abs(x + 1) < 1e-10:
+        return PI  # arccos(-1) = π
+    if abs(x) < 1e-10:
+        return PI / 2.0  # arccos(0) = π/2
+    
+    # For |x| > 0.5, use identity: arccos(x) = π/2 - arcsin(x)
+    # For |x| <= 0.5, use: arccos(x) = π/2 - arcsin(x)
+    # We compute arcsin(x) using Taylor series
+    
+    # Compute arcsin(x) using Taylor series
+    # arcsin(x) = Σ [(2n)! / (2^(2n) * (n!)² * (2n+1))] * x^(2n+1)
+    
+    arcsin_x = x
+    term = x
+    
+    for n in range(1, 100):  # Sufficient iterations for convergence
+        # Calculate next term in series
+        # term_n = term_(n-1) * x² * (2n-1)² / ((2n) * (2n+1))
+        term = term * x * x * (2 * n - 1) * (2 * n - 1) / ((2 * n) * (2 * n + 1))
+        arcsin_x += term
+        
+        # Check for convergence
+        if abs(term) < 1e-15:
+            break
+    
+    # Use identity: arccos(x) = π/2 - arcsin(x)
+    return PI / 2.0 - arcsin_x
+
+
+def manual_cos(x: float) -> float:
+    """
+    Computes cos(x) manually using Taylor series.
+    
+    Args:
+        x (float): Angle in radians
+    
+    Returns:
+        float: cos(x)
+    
+    Taylor series for cos(x):
+    cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + x⁸/8! - ...
+    """
+    # Manual 2π value
+    TWO_PI = 6.283185307179586
+    
+    # Reduce x to range [0, 2π] for better convergence
+    while x > TWO_PI:
+        x -= TWO_PI
+    while x < 0:
+        x += TWO_PI
+    
+    # Taylor series
+    cos_x = 1.0
+    term = 1.0
+    
+    for n in range(1, 50):  # Sufficient iterations
+        # term_n = -term_(n-1) * x² / ((2n-1) * (2n))
+        term = -term * x * x / ((2 * n - 1) * (2 * n))
+        cos_x += term
+        
+        # Check for convergence
+        if abs(term) < 1e-15:
+            break
+    
+    return cos_x
 
 
 def main() -> None:
@@ -803,9 +846,6 @@ def main() -> None:
         
         # Display polynomial degree
         print(f"Polynomial degree: {degree}")
-
-        if degree in (0, 1, 2):
-            print_steps(reduced, degree)
         
         # Solve based on degree
         if degree == 0:
@@ -832,7 +872,6 @@ def main() -> None:
     
     except Exception as e:
         handle_error(f"Unexpected error: {str(e)}")
-
 
 if __name__ == "__main__":
     main()
