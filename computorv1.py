@@ -377,7 +377,7 @@ def print_steps(reduced: Dict[int, float], degree: int) -> None:
         
         print(f"This is a quadratic equation: {format_number(a)}X² + {format_number(b)}X + {format_number(c)} = 0")
         print(f"Coefficients: a = {format_number(a)}, b = {format_number(b)}, c = {format_number(c)}")
-        print(f"\nUsing quadratic formula: x = (-b ± √Δ) / 2a")
+        print(f"\nUsing quadratic formula: x = (-b ± √Δ) / (2a)")
         print(f"Where Δ = b² - 4ac (discriminant)")
         
         discriminant = b * b - 4 * a * c
@@ -388,11 +388,38 @@ def print_steps(reduced: Dict[int, float], degree: int) -> None:
         print(f"  Δ = {format_number(discriminant)}")
         
         if discriminant > 0:
-            print(f"\nΔ > 0: Two distinct real solutions exist")
+            print(f"\nΔ > 0: Two distinct real solutions exist.")
+            sqrt_discriminant = manual_sqrt(discriminant)
+            print(f"√Δ = {format_number(sqrt_discriminant)}")
+            print(f"\nNow calculating both solutions using x = (-b ± √Δ) / (2a):")
+            print(f"  x₁ = (-({format_number(b)}) + {format_number(sqrt_discriminant)}) / (2 * {format_number(a)})")
+            print(f"  x₂ = (-({format_number(b)}) - {format_number(sqrt_discriminant)}) / (2 * {format_number(a)})")
+            
+            x1 = (-b + sqrt_discriminant) / (2 * a)
+            x2 = (-b - sqrt_discriminant) / (2 * a)
+            print(f"  x₁ = {format_number(x1)}")
+            print(f"  x₂ = {format_number(x2)}")
+        
         elif abs(discriminant) < 1e-10:
-            print(f"\nΔ = 0: One repeated real solution exists")
+            print(f"\nΔ = 0: One repeated real solution exists.")
+            print(f"x = -b / (2a)")
+            print(f"  = -({format_number(b)}) / (2 * {format_number(a)})")
+            x = -b / (2 * a)
+            print(f"  = {format_number(x)}")
+        
         else:
-            print(f"\nΔ < 0: Two complex conjugate solutions exist")
+            print(f"\nΔ < 0: Two complex conjugate solutions exist.")
+            abs_discriminant = -discriminant
+            sqrt_abs_discriminant = manual_sqrt(abs_discriminant)
+            print(f"√|Δ| = {format_number(sqrt_abs_discriminant)}")
+            print(f"\nNow calculating using x = (-b ± i√|Δ|) / (2a):")
+            print(f"  x₁ = (-({format_number(b)}) + i{format_number(sqrt_abs_discriminant)}) / (2 * {format_number(a)})")
+            print(f"  x₂ = (-({format_number(b)}) - i{format_number(sqrt_abs_discriminant)}) / (2 * {format_number(a)})")
+            
+            real_part = -b / (2 * a)
+            imag_part = sqrt_abs_discriminant / (2 * a)
+            print(f"  x₁ = {format_number(real_part)} + {format_number(imag_part)}i")
+            print(f"  x₂ = {format_number(real_part)} - {format_number(imag_part)}i")
     
     else:
         print(f"This is a degree {degree} polynomial equation.")
@@ -776,6 +803,9 @@ def main() -> None:
         
         # Display polynomial degree
         print(f"Polynomial degree: {degree}")
+
+        if degree in (0, 1, 2):
+            print_steps(reduced, degree)
         
         # Solve based on degree
         if degree == 0:
