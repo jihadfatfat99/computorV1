@@ -488,14 +488,14 @@ def solve_degree_2(reduced: Dict[int, float]) -> None:
         solution1 = (-b + sqrt_discriminant) / (2 * a)
         solution2 = (-b - sqrt_discriminant) / (2 * a)
         
-        print(format_number(solution1))
-        print(format_number(solution2))
+        print(f"{format_number(solution1)}  (or {simplify_fraction(-b + sqrt_discriminant, 2 * a)} as fraction)")
+        print(f"{format_number(solution2)}  (or {simplify_fraction(-b - sqrt_discriminant, 2 * a)} as fraction)")
     
     elif abs(discriminant) <= threshold:
         print("Discriminant is zero, the solution is:")
         
         solution = -b / (2 * a)
-        print(format_number(solution))
+        print(f"{format_number(solution)} (or {simplify_fraction(-b , 2 * a)} as fraction)")
     
     else:
         print("Discriminant is strictly negative, the two complex solutions are:")
